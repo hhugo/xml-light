@@ -36,7 +36,7 @@
 	}
 
 	{i Note about ENTITIES:}
-	
+
 	While parsing Xml, PCDATA is always parsed and
 	the Xml entities &amp; &gt; &lt; &apos; &quot; are replaced by their
 	corresponding ASCII characters. For Xml attributes, theses can be
@@ -75,9 +75,14 @@ type dtd_attr_type =
 	| DTDID
 	| DTDIDRef
 
+type dtd_entity =
+  | DTDEntityValue of string
+  | DTDEntityExtern of string * string
+
 type dtd_item =
 	| DTDAttribute of string * string * dtd_attr_type * dtd_attr_default
 	| DTDElement of string * dtd_element_type
+  | DTDEntity of string * dtd_entity
 
 type dtd = dtd_item list
 
@@ -86,7 +91,7 @@ type checked
 (** {6 The DTD Functions} *)
 
 (** Parse the named file into a Dtd data structure. Raise
-	{!Xml.File_not_found} if an error occured while opening the file. 
+	{!Xml.File_not_found} if an error occured while opening the file.
 	Raise {!Dtd.Parse_error} if parsing failed. *)
 val parse_file : string -> dtd
 

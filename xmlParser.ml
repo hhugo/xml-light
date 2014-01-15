@@ -33,7 +33,7 @@ type t = {
 	mutable resolve : (string -> checked);
 }
 
-type source = 
+type source =
 	| SFile of string
 	| SChannel of in_channel
 	| SString of string

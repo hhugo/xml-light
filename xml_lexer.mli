@@ -54,7 +54,7 @@ type token =
 
 type pos = int * int * int * int
 
-val init : Lexing.lexbuf -> unit 
+val init : Lexing.lexbuf -> unit
 val close : Lexing.lexbuf -> unit
 val token : Lexing.lexbuf -> token
 val dtd : Lexing.lexbuf -> Dtd.dtd

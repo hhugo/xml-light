@@ -77,10 +77,14 @@ type dtd_attr_type =
 	| DTDID
 	| DTDIDRef
 
+type dtd_entity =
+  | DTDEntityValue of string
+  | DTDEntityExtern of string * string
+
 type dtd_item =
 	| DTDAttribute of string * string * dtd_attr_type * dtd_attr_default
 	| DTDElement of string * dtd_element_type
-
+  | DTDEntity of string * dtd_entity
 type dtd_result =
 	| DTDNext
 	| DTDNotMatched
@@ -229,6 +233,7 @@ let check dtd =
 				set_map h aname adata
 	in
 	let check_item = function
+    | DTDEntity _ -> failwith "todo"
 		| DTDAttribute (tag,aname,atype,adef) ->
 			let utag = String.uppercase tag in
 			ftodo utag None;
@@ -495,6 +500,10 @@ let prove_error = function
 	| MissingID idref -> sprintf "missing ID value for IDREF '%s'" idref
 
 let to_string = function
+  | DTDEntity (name,DTDEntityValue v) ->
+    sprintf"<!ENTITY %s %S>" name v
+  | DTDEntity (name,DTDEntityExtern (ext,v)) ->
+    sprintf"<!ENTITY %s %s %S>" name ext v
 	| DTDAttribute (tag,aname,atype,adef) ->
 		let atype_to_string = function
 			| DTDCData -> "CDATA"

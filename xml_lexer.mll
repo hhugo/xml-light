@@ -54,6 +54,7 @@ type dtd_decl =
 type dtd_item_type =
 	| TElement
 	| TAttribute
+  | TEntity
 
 type token =
 	| Tag of string * (string * string) list * bool
@@ -465,6 +466,7 @@ and dtd_item = parse
 			match t with
 			| TElement -> [ DTDElement (name , (dtd_element_type lexbuf)) ]
 			| TAttribute -> List.map (fun (attrname,atype,adef) -> DTDAttribute (name, attrname, atype, adef)) (dtd_attributes lexbuf)
+      | TEntity -> [DTDEntity (name,dtd_entity lexbuf)]
 		}
 	| _ | eof
 		{  dtd_error lexbuf EDTDItemExpected }
@@ -485,6 +487,16 @@ and dtd_attributes = parse
 			a :: (dtd_attributes lexbuf)
 		}
 
+and dtd_entity = parse
+  | "" {
+      let v = dtd_attr_string lexbuf in
+      let () = dtd_entity_end lexbuf in
+      DTDEntityValue v
+  }
+
+and dtd_entity_end = parse
+  | ">" {()}
+
 and dtd_item_type = parse
 	| "ELEMENT"
 		{
@@ -496,8 +508,13 @@ and dtd_item_type = parse
 			ignore_spaces lexbuf;
 			TAttribute
 		}
-	| _ | eof
-		{ dtd_error lexbuf EInvalidDTDTag }
+  | "ENTITY"
+		{
+			ignore_spaces lexbuf;
+			TEntity
+		}
+  | _ | eof
+          { dtd_error lexbuf EInvalidDTDTag  }
 
 and dtd_element_type = parse
 	| "ANY"
